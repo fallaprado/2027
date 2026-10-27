@@ -1,1626 +1,888 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Nacre: Falla Prado 2027</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Carrer Ample Nights: Edició Fonda Suïssa | Reus</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Syne', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                    },
+                    colors: {
+                        asphalt: '#090a0f',
+                        barDark: '#12131c',
+                        streetLamp: '#fbbf24',
+                        vermutRed: '#b91c1c',
+                        neonDanger: '#ff0055',
+                        neonGreen: '#10b981',
+                        dirtyWhite: '#e2e8f0'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #090a0f;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
 
-  <!-- Configuració PWA per a mòbil -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#010d18">
+        /* Efecte llum de fanal parpellejant de Reus */
+        @keyframes streetFlicker {
+            0%, 100% { opacity: 1; }
+            41% { opacity: 0.8; }
+            42% { opacity: 0.2; }
+            43% { opacity: 0.9; }
+            45% { opacity: 0.3; }
+            46% { opacity: 1; }
+        }
+        .street-light {
+            animation: streetFlicker 6s infinite;
+        }
 
-  <style>
-    :root {
-      --bg-ocean: #010d18;
-      --teal: #00f2fe;
-      --sea-blue: #0077b6;
-      --gold: #ffbe0b;
-      --fire: #ff5500;
-      --posidonia: #10b981;
-      --coral: #ff2a75;
-      --card-bg: rgba(5, 26, 44, 0.95);
-      --font-serif: "Georgia", "Palatino", serif;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+        /* Screen Shake quan apareix el del "SALE SALE" */
+        @keyframes shakeHard {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-2px, -3px) rotate(-1deg); }
+            20% { transform: translate(-4px, 0px) rotate(1deg); }
+            30% { transform: translate(4px, 3px) rotate(0deg); }
+            40% { transform: translate(2px, -2px) rotate(1deg); }
+            50% { transform: translate(-2px, 3px) rotate(-1deg); }
+            60% { transform: translate(-4px, 1px) rotate(0deg); }
+            70% { transform: translate(4px, 2px) rotate(-1deg); }
+            80% { transform: translate(-2px, -2px) rotate(1deg); }
+            90% { transform: translate(2px, 3px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(0deg); }
+        }
+        .shake-screen {
+            animation: shakeHard 0.5s ease-in-out infinite;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      font-family: var(--font-sans);
-    }
-
-    body {
-      background: var(--bg-ocean);
-      color: #e3f2fd;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      position: fixed;
-    }
-
-    /* 1. SPLASH SCREEN (4 SEGONS) */
-    #splash-screen {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at 50% 35%, #052f4f 0%, #010c16 100%);
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 30px;
-      text-align: center;
-      transition: opacity 0.8s ease, visibility 0.8s;
-    }
-
-    #splash-screen.fade-out {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .splash-emblem {
-      font-size: 54px;
-      margin-bottom: 20px;
-      filter: drop-shadow(0 0 25px var(--teal));
-      animation: pulseSplash 2s infinite alternate;
-    }
-
-    @keyframes pulseSplash {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      100% { transform: scale(1.08); opacity: 1; }
-    }
-
-    .splash-text {
-      font-family: var(--font-serif);
-      font-size: 20px;
-      line-height: 1.5;
-      color: #ffffff;
-      max-width: 380px;
-      font-weight: 700;
-      text-shadow: 0 0 25px rgba(0, 242, 254, 0.6);
-      margin-bottom: 28px;
-    }
-
-    .splash-highlight {
-      color: var(--gold);
-      display: block;
-      margin-top: 10px;
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      text-shadow: 0 0 20px rgba(255, 190, 11, 0.6);
-    }
-
-    .splash-bar-container {
-      width: 180px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .splash-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--teal), var(--gold));
-      animation: splashProgress 4s linear forwards;
-    }
-
-    @keyframes splashProgress {
-      0% { width: 0%; }
-      100% { width: 100%; }
-    }
-
-    /* CONTENIDOR APP */
-    #app-container {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      background: radial-gradient(circle at 50% 15%, #05263d 0%, #010a12 100%);
-    }
-
-    canvas#fx-canvas {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    /* TOP HUD */
-    #top-hud {
-      z-index: 10;
-      padding: 10px 14px 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(1, 13, 22, 0.88);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(0, 242, 254, 0.2);
-    }
-
-    .hud-chip {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(0, 242, 254, 0.25);
-      border-radius: 16px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    /* PANTALLES */
-    .screen {
-      position: absolute;
-      inset: 0;
-      top: 50px;
-      display: none;
-      flex-direction: column;
-      z-index: 5;
-      overflow-y: auto;
-      padding: 14px 14px 85px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .screen.active {
-      display: flex;
-      opacity: 1;
-    }
-
-    /* INICI DEL JOC */
-    #screen-intro {
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      top: 0;
-    }
-
-    .intro-logo { font-size: 52px; margin-bottom: 8px; }
-    .intro-badge { font-size: 11px; color: var(--teal); letter-spacing: 2px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; }
-    .intro-title { font-family: var(--font-serif); font-size: 32px; font-weight: 900; color: #fff; margin-bottom: 12px; }
-    .intro-lore { font-size: 14px; line-height: 1.5; color: #b0d6ed; max-width: 320px; margin-bottom: 24px; font-style: italic; }
-
-    .btn-action {
-      background: linear-gradient(135deg, var(--teal), #0077b6);
-      border: none;
-      border-radius: 25px;
-      padding: 14px 30px;
-      color: #011422;
-      font-weight: 800;
-      font-size: 14px;
-      cursor: pointer;
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-action:active { transform: scale(0.97); }
-
-    /* MAPA DE ZONES */
-    .zones-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .zone-item {
-      background: var(--card-bg);
-      border: 1px solid rgba(0, 242, 254, 0.2);
-      border-radius: 16px;
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: relative;
-    }
-
-    .zone-item.available {
-      border-color: var(--teal);
-      box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
-      cursor: pointer;
-    }
-
-    .zone-item.completed {
-      border-color: var(--posidonia);
-      background: rgba(16, 185, 129, 0.15);
-      cursor: pointer;
-    }
-
-    .zone-item.locked {
-      opacity: 0.45;
-      filter: grayscale(0.85);
-    }
-
-    .zone-badge {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 9px;
-      font-weight: 800;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border-radius: 8px;
-    }
-
-    .badge-available { background: var(--teal); color: #011422; }
-    .badge-completed { background: var(--posidonia); color: #011422; }
-    .badge-locked { background: rgba(255,255,255,0.1); color: #8bb2c9; }
-
-    .zone-icon {
-      font-size: 26px;
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    /* TRANSICIÓ DE MAPA ANIMAT */
-    #screen-transition {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at 50% 40%, #063554 0%, #010a12 100%);
-      z-index: 900;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      text-align: center;
-    }
-
-    #map-svg-container {
-      width: 100%;
-      max-width: 340px;
-      height: 360px;
-      position: relative;
-      margin-bottom: 16px;
-    }
-
-    /* PANTALLA REFUGI / AQUARI VIU */
-    #aquarium-canvas {
-      width: 100%;
-      height: 320px;
-      border-radius: 20px;
-      border: 2px solid var(--teal);
-      background: radial-gradient(circle at 50% 20%, #073a5a, #010d18);
-      box-shadow: 0 0 30px rgba(0, 242, 254, 0.25);
-      margin-bottom: 14px;
-    }
-
-    /* ARENA DE JOC I CANVAS INTERACTIUS DE TACTE */
-    .touch-canvas-wrapper {
-      position: relative;
-      width: 100%;
-      height: 220px;
-      border-radius: 16px;
-      overflow: hidden;
-      margin: 10px 0;
-      border: 1px solid var(--teal);
-      touch-action: none;
-    }
-
-    .touch-canvas-wrapper canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .game-arena {
-      background: rgba(3, 20, 34, 0.95);
-      border: 1px solid rgba(0, 242, 254, 0.25);
-      border-radius: 20px;
-      padding: 16px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .btn-choice {
-      width: 100%;
-      padding: 12px 14px;
-      margin-bottom: 8px;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(0, 242, 254, 0.25);
-      border-radius: 14px;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: left;
-      cursor: pointer;
-      line-height: 1.35;
-    }
-
-    .btn-choice:active {
-      background: rgba(0, 242, 254, 0.25);
-      border-color: var(--teal);
-    }
-
-    .bubble-pad-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .bubble-btn {
-      height: 80px;
-      border-radius: 18px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 13px;
-      transition: transform 0.1s, filter 0.2s;
-    }
-
-    .bubble-btn:active, .bubble-btn.lit {
-      transform: scale(1.05);
-      filter: brightness(1.7);
-    }
-
-    /* FOOTER BAR (4 PESTANYES) */
-    nav#app-nav {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 65px;
-      background: rgba(1, 13, 22, 0.96);
-      backdrop-filter: blur(14px);
-      border-top: 1px solid rgba(0, 242, 254, 0.2);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 20;
-    }
-
-    .nav-btn {
-      background: transparent;
-      border: none;
-      color: #729cb4;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      font-size: 10.5px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .nav-btn.active { color: var(--teal); }
-    .nav-btn span.icon { font-size: 20px; }
-
-    /* MODAL */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(1, 9, 16, 0.94);
-      backdrop-filter: blur(10px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-    }
-
-    .modal-card {
-      width: 100%;
-      max-width: 350px;
-      max-height: 85vh;
-      overflow-y: auto;
-      background: linear-gradient(175deg, #092c45, #02121e);
-      border: 2px solid var(--teal);
-      border-radius: 24px;
-      padding: 20px 16px;
-      box-shadow: 0 0 35px rgba(0, 242, 254, 0.35);
-    }
-
-    /* TAULA DE RÀNQUING */
-    .rank-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 12px;
-    }
-
-    .rank-table tr {
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .rank-table td, .rank-table th {
-      padding: 8px 6px;
-      text-align: left;
-    }
-
-    .rank-table tr.me {
-      background: rgba(0, 242, 254, 0.15);
-      font-weight: bold;
-      color: var(--teal);
-    }
-  </style>
+        /* Escàner de radar urbà */
+        @keyframes radarRot {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .street-scanner {
+            background: conic-gradient(from 0deg, rgba(251, 191, 36, 0.3) 0deg, rgba(251, 191, 36, 0) 50deg, transparent 360deg);
+            animation: radarRot 3.5s linear infinite;
+        }
+    </style>
 </head>
-<body>
+<body class="flex justify-center min-h-screen">
 
-<!-- PANTALLA SPLASH DE 4 SEGONS -->
-<div id="splash-screen">
-  <div class="splash-emblem">🌊✨</div>
-  <div class="splash-text">
-    Estàs a punt de veure el projecte que guanyarà el 
-    <span class="splash-highlight">1r premi de la categoria</span>
-    el 17 de març de 2027
-  </div>
-  <div class="splash-bar-container">
-    <div class="splash-bar-fill"></div>
-  </div>
-</div>
+    <!-- Marc Mobile-First -->
+    <div id="app-container" class="w-full max-w-md flex flex-col h-screen bg-barDark relative z-10 border-x border-amber-900/30 shadow-2xl">
+        
+        <!-- HEADER: Carrer Ample Status & Sobrietat -->
+        <header class="px-4 py-3 bg-asphalt/95 border-b border-amber-950/60 flex justify-between items-center z-20">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-lg bg-vermutRed/30 border border-vermutRed flex items-center justify-center text-lg shadow-sm">
+                    🍷
+                </div>
+                <div>
+                    <h1 class="text-[10px] font-mono tracking-widest text-amber-500 uppercase font-bold">Reus · Zona Llibertat</h1>
+                    <div id="user-display-name" class="text-sm font-black text-white truncate max-w-[130px]">Noctàmbul</div>
+                </div>
+            </div>
 
-<!-- TRANSICIÓ ANIMADA ENTRE PROVES -->
-<div id="screen-transition">
-  <div style="font-size:12px; color:var(--teal); font-weight:800; letter-spacing:1px; margin-bottom:4px;" id="transit-node-name">TRAVESSIA SUBMARINA</div>
-  <div style="font-size:19px; color:var(--gold); font-weight:900; margin-bottom:6px;" id="transit-depth-val">FONDÀRIA: -8m</div>
-  
-  <div id="map-svg-container">
-    <svg width="100%" height="100%" viewBox="0 0 320 340" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M 20 40 Q 100 20 180 50 T 300 40" stroke="rgba(0,242,254,0.15)" stroke-width="2" stroke-dasharray="4 4"/>
-      <path d="M 20 120 Q 110 90 190 130 T 300 110" stroke="rgba(0,242,254,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
-      <path d="M 20 200 Q 90 180 180 210 T 300 190" stroke="rgba(0,242,254,0.15)" stroke-width="2" stroke-dasharray="4 4"/>
-      <path d="M 20 280 Q 120 260 190 290 T 300 270" stroke="rgba(0,242,254,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+            <!-- Indicadors: Sobrietat & Punts de Barri -->
+            <div class="flex items-center space-x-3 font-mono">
+                <!-- Sobrietat -->
+                <div class="flex items-center space-x-1 bg-asphalt px-2 py-1 rounded-md border border-slate-700">
+                    <span class="text-xs">🍺</span>
+                    <span id="header-sobriety" class="text-xs font-bold text-amber-400">100%</span>
+                </div>
+                <!-- Monedes / Punts de Carrer -->
+                <div class="flex items-center space-x-1 bg-asphalt px-2 py-1 rounded-md border border-amber-500/40">
+                    <span class="text-xs">🪙</span>
+                    <span id="header-coins" class="text-xs font-bold text-amber-300">0</span>
+                </div>
+            </div>
+        </header>
 
-      <path id="transit-glow-path" d="M 60 50 C 140 70, 200 110, 240 140 C 260 170, 150 200, 100 230 C 50 260, 160 290, 220 310" 
-            stroke="var(--gold)" stroke-width="4" stroke-linecap="round" stroke-dasharray="500" stroke-dashoffset="500"/>
+        <!-- CONTINGUT PRINCIPAL -->
+        <main class="flex-1 overflow-y-auto pb-24 p-4 relative">
+            
+            <!-- 1. PANTALLA: CARRER AMPLE & RADAR -->
+            <section id="tab-map" class="screen-view flex flex-col items-center">
+                
+                <!-- Ubicació actual a Reus -->
+                <div class="w-full bg-asphalt/90 border border-amber-500/30 rounded-xl p-3 mb-3 shadow-lg flex justify-between items-center">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="p-2 bg-amber-950/40 rounded-lg text-amber-400 text-lg">🏮</div>
+                        <div>
+                            <span class="text-[9px] uppercase font-mono tracking-wider text-amber-500">Punt Calent</span>
+                            <div id="current-location-name" class="font-bold text-white text-xs">Fonda Suïssa (Portal del Bar)</div>
+                        </div>
+                    </div>
+                    <button onclick="patrolReus()" class="px-2.5 py-1.5 text-xs bg-amber-950/80 text-amber-300 rounded-lg border border-amber-700/50 hover:bg-amber-900 active:scale-95 transition font-mono flex items-center space-x-1">
+                        <span>🚶</span>
+                        <span>Moure's</span>
+                    </button>
+                </div>
 
-      <circle cx="60" cy="50" r="9" fill="#0077b6" stroke="var(--teal)" stroke-width="2"/>
-      <text x="75" y="54" fill="#a0d2eb" font-size="11" font-weight="bold">La Goleta (0m)</text>
+                <!-- RADAR NOCTURN DE REUS -->
+                <div class="relative w-60 h-60 my-2 flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full border border-amber-500/20"></div>
+                    <div class="absolute inset-10 rounded-full border border-amber-500/30"></div>
+                    <div class="absolute inset-20 rounded-full border border-amber-500/40"></div>
+                    <div class="absolute w-full h-[1px] bg-amber-500/20"></div>
+                    <div class="absolute h-full w-[1px] bg-amber-500/20"></div>
+                    
+                    <!-- Eix d'escombrat del radar -->
+                    <div class="absolute inset-0 rounded-full street-scanner pointer-events-none"></div>
 
-      <circle cx="240" cy="140" r="9" fill="#0077b6" stroke="var(--teal)" stroke-width="2"/>
-      <text x="140" y="145" fill="#a0d2eb" font-size="11" font-weight="bold">Posidònia (-12m)</text>
+                    <!-- Fanal Central / Jugador -->
+                    <div class="relative z-10 w-12 h-12 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center shadow-lg shadow-amber-500/30 street-light">
+                        <span class="text-xl">🧥</span>
+                    </div>
 
-      <circle cx="100" cy="230" r="9" fill="#0077b6" stroke="var(--teal)" stroke-width="2"/>
-      <text x="115" y="235" fill="#a0d2eb" font-size="11" font-weight="bold">Esculls (-25m)</text>
+                    <!-- Punts sospitosos al carrer -->
+                    <div class="absolute top-8 left-10 text-xs animate-ping">📦</div>
+                    <div class="absolute bottom-12 right-8 text-xs animate-pulse">🍷</div>
+                    <div class="absolute top-24 right-8 text-xs">🗣️</div>
+                </div>
 
-      <circle cx="220" cy="310" r="11" fill="var(--fire)" stroke="var(--gold)" stroke-width="2.5"/>
-      <text x="95" y="315" fill="var(--gold)" font-size="11" font-weight="bold">Falla Prado (-40m)</text>
+                <!-- Hores intempestives i soroll ambiental -->
+                <p class="text-xs text-slate-400 font-mono my-2 text-center">
+                    Hora: <span class="text-amber-400 font-bold">04:47 AM</span> | Ambient: <span id="street-vibe" class="text-red-400 font-bold">Molt Mogut</span>
+                </p>
 
-      <g id="swimmer-avatar" transform="translate(60, 50)">
-        <circle cx="0" cy="0" r="13" fill="rgba(0,242,254,0.4)"/>
-        <text x="-9" y="6" font-size="16">🧜‍♀️</text>
-      </g>
-    </svg>
-  </div>
+                <!-- BOTÓ PRINCIPAL D'ACCIÓ -->
+                <div class="w-full mt-2 flex flex-col items-center">
+                    <button onclick="exploreStreet()" id="btn-search" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 text-asphalt font-black text-base uppercase tracking-wider shadow-lg shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center space-x-2">
+                        <span>🔦</span>
+                        <span>Furgar pel carrer / Entrar a la Fonda (-15% Sobrietat)</span>
+                    </button>
+                    <span class="text-[10px] text-slate-400 mt-2 font-mono text-center">
+                        Atenció: personatges de dubtosa reputació ronden pels voltants
+                    </span>
+                </div>
+            </section>
 
-  <div style="font-size:12px; color:#b3dbf2; font-style:italic;">Navegant les corrents de Tavernes...</div>
-</div>
+            <!-- 2. PANTALLA: BUTXACA (OBJECTES QUE SEMBLEN INÚTILS) -->
+            <section id="tab-inventory" class="screen-view hidden">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <h2 class="text-base font-black text-white">La Teua Butxaca</h2>
+                        <p class="text-xs text-amber-500">Andròmines i trastos trobats pel carrer</p>
+                    </div>
+                    <span id="pocket-count" class="text-xs font-mono bg-asphalt px-2 py-1 rounded border border-slate-700 text-slate-300">
+                        0 Objectes
+                    </span>
+                </div>
 
-<div id="app-container">
-  <canvas id="fx-canvas"></canvas>
+                <div id="items-grid" class="grid grid-cols-2 gap-2.5">
+                    <!-- Es renderitzen els objectes amb JS -->
+                </div>
+            </section>
 
-  <!-- TOP HUD -->
-  <header id="top-hud">
-    <div class="hud-chip" style="border-color: var(--fire);" id="hud-lives">
-      <span>🔥</span> <span id="lives-display">3/3</span>
-    </div>
-    <div class="hud-chip" style="border-color: var(--gold);">
-      <span>🧨</span> <span id="points-display">100 Pts</span>
-    </div>
-    <div class="hud-chip" style="border-color: var(--teal);" id="hud-pearls">
-      <span>✨</span> <span id="pearls-display">0/8</span>
-    </div>
-  </header>
+            <!-- 3. PANTALLA: LA FONDA SUÏSSA (BAR & NPCS) -->
+            <section id="tab-fonda" class="screen-view hidden">
+                <div class="bg-gradient-to-b from-amber-950/40 to-asphalt border border-amber-600/40 rounded-2xl p-4 mb-4 text-center">
+                    <span class="text-3xl">🏨🍻</span>
+                    <h2 class="text-lg font-black text-white mt-1">Dins de la Fonda Suïssa</h2>
+                    <p class="text-xs text-slate-300 mt-1">
+                        Olor de conyac barat, serradures a terra i veus alçades. Aquí els objectes inútils cobren vida.
+                    </p>
+                </div>
 
-  <!-- PANTALLA INICI -->
-  <section id="screen-intro" class="screen active">
-    <div class="intro-logo">🐚✨</div>
-    <div class="intro-badge">Falla Prado 2027 · Tavernes de la Valldigna</div>
-    <h1 class="intro-title">NACRE</h1>
-    <p class="intro-lore">
-      «La Llàgrima de la Mediterrània s’ha trencat sota les aigües de Tavernes. Reviu la memòria del poble, salva els hàbitats i desperta el monument submarí.»
-    </p>
+                <h3 class="text-xs font-mono uppercase text-amber-400 tracking-wider mb-2 font-bold">Fauna de la Barra:</h3>
 
-    <button class="btn-action" onclick="Game.showScreen('screen-map')">
-      <span>ENTRAR A LA MAR</span> <span>🌊</span>
-    </button>
-  </section>
+                <!-- Llista d'interaccions amb personatges -->
+                <div class="space-y-3">
+                    <!-- NPC 1: El Filòsof del Got de Tub -->
+                    <div class="bg-asphalt border border-slate-700/80 rounded-xl p-3 flex flex-col space-y-2">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="text-2xl">👴🏼</span>
+                            <div>
+                                <div class="text-xs font-bold text-white">L'home del fons amb la boina</div>
+                                <div class="text-[10px] text-slate-400 italic">"Tens una xapa per calçar la taula? Balla més que la meua dona..."</div>
+                            </div>
+                        </div>
+                        <button onclick="tradeItemWithNPC('xapa')" class="w-full py-1.5 bg-amber-950 text-amber-300 border border-amber-700 rounded-lg text-xs font-mono hover:bg-amber-900 transition flex justify-center items-center space-x-1">
+                            <span>Donar Xapa Esclafada ➡️ Guanyar 50 Monedes</span>
+                        </button>
+                    </div>
 
-  <!-- PANTALLA 1: MAPA DE ZONES -->
-  <section id="screen-map" class="screen">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <div>
-        <div style="font-size:10px; color:var(--teal); font-weight:900; letter-spacing:1px;">FONS MARÍ DE TAVERNES</div>
-        <div style="font-size:17px; font-weight:800;">Les Perles de Nacre</div>
-      </div>
-      <button class="btn-action" style="padding:6px 12px; font-size:11px;" onclick="Game.openCromoGenerator()">
-        <span>📸</span> <span>Cromo Stories</span>
-      </button>
-    </div>
+                    <!-- NPC 2: El Trucador de Reus -->
+                    <div class="bg-asphalt border border-slate-700/80 rounded-xl p-3 flex flex-col space-y-2">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="text-2xl">🧥</span>
+                            <div>
+                                <div class="text-xs font-bold text-white">L'espavilat de Carrer Ample</div>
+                                <div class="text-[10px] text-slate-400 italic">"Portes la clau rovellada? Tinc accés al rebost secret."</div>
+                            </div>
+                        </div>
+                        <button onclick="tradeItemWithNPC('clau')" class="w-full py-1.5 bg-amber-950 text-amber-300 border border-amber-700 rounded-lg text-xs font-mono hover:bg-amber-900 transition flex justify-center items-center space-x-1">
+                            <span>Utilitzar Clau Rovellada ➡️ Vermut Màgic (+40% Sobrietat)</span>
+                        </button>
+                    </div>
 
-    <div class="zones-list" id="zones-list"></div>
-  </section>
+                    <!-- NPC 3: La Taula dels Escacs Ebris -->
+                    <div class="bg-asphalt border border-slate-700/80 rounded-xl p-3 flex flex-col space-y-2">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="text-2xl">🎲</span>
+                            <div>
+                                <div class="text-xs font-bold text-white">Els jugadors de parxís nocturn</div>
+                                <div class="text-[10px] text-slate-400 italic">"Ens falta un dau gastat per acabar la partida d'aposta!"</div>
+                            </div>
+                        </div>
+                        <button onclick="tradeItemWithNPC('dau')" class="w-full py-1.5 bg-amber-950 text-amber-300 border border-amber-700 rounded-lg text-xs font-mono hover:bg-amber-900 transition flex justify-center items-center space-x-1">
+                            <span>Lliurar Dau Gastat ➡️ Respecte Màxim (+100 Punts)</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
 
-  <!-- PANTALLA 2: EL REFUGI DE NACRE (AQUARI VIU) -->
-  <section id="screen-refugi" class="screen">
-    <div style="margin-bottom:8px;">
-      <div style="font-size:10px; color:var(--teal); font-weight:900;">ECOSISTEMA RESTAURAT</div>
-      <div style="font-size:17px; font-weight:800;">El Teu Refugi Submarí</div>
-    </div>
-    
-    <canvas id="aquarium-canvas" width="340" height="320"></canvas>
+            <!-- 4. PANTALLA: PERFIL I COLLES DE REUS -->
+            <section id="tab-profile" class="screen-view hidden">
+                <div class="bg-asphalt border border-amber-800/40 rounded-2xl p-4 mb-4 text-center">
+                    <div class="w-16 h-16 mx-auto rounded-full border-2 border-amber-500 p-1 mb-2 bg-barDark flex items-center justify-center text-3xl" id="profile-avatar">
+                        🧥
+                    </div>
+                    <h2 id="profile-name" class="text-base font-black text-white">Noctàmbul</h2>
+                    <div id="profile-faction-badge" class="inline-block mt-1 text-[11px] px-2.5 py-0.5 rounded-full font-mono font-bold">
+                        Sense Colla
+                    </div>
 
-    <div style="background:var(--card-bg); border:1px solid rgba(0,242,254,0.25); border-radius:16px; padding:12px;">
-      <div style="font-size:13px; font-weight:bold; color:var(--gold); margin-bottom:4px;">Estat de la Marjal i Badia:</div>
-      <div style="font-size:12px; color:#c7e6f8; line-height:1.4;" id="aquarium-status-text">
-        El fons marí comença a despertar. A mesura que trobes perles i plantes el teu ninot, noves espècies vindran a viure ací!
-      </div>
-    </div>
-  </section>
+                    <!-- Reputació / Nivell -->
+                    <div class="mt-4 text-left">
+                        <div class="flex justify-between text-xs font-mono text-slate-300 mb-1">
+                            <span>Respecte Ganxet: <strong id="profile-level" class="text-amber-400">Nivell 1</strong></span>
+                            <span id="profile-rep-text">0 / 100 Rep</span>
+                        </div>
+                        <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
+                            <div id="profile-rep-bar" class="bg-gradient-to-r from-amber-500 to-vermutRed h-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
 
-  <!-- PANTALLA 3: RÀNQUING DE LA COMISSIÓ -->
-  <section id="screen-rank" class="screen">
-    <div style="margin-bottom:10px;">
-      <div style="font-size:10px; color:var(--gold); font-weight:900;">PIQUE FALLER 2027</div>
-      <div style="font-size:17px; font-weight:800;">Classificació Falla Prado</div>
-    </div>
+                <!-- Gestió de Sobrietat -->
+                <div class="bg-asphalt border border-slate-800 rounded-xl p-3 mb-4 flex justify-between items-center font-mono">
+                    <div>
+                        <div class="text-[10px] uppercase text-amber-500">Estat Hepàtic</div>
+                        <div class="text-xs font-bold text-white">Nivell de Sobrietat</div>
+                    </div>
+                    <div class="text-right">
+                        <div id="profile-sobriety-val" class="text-base font-black text-amber-400">100%</div>
+                        <div class="text-[9px] text-slate-400">+5% cada 12s descansant</div>
+                    </div>
+                </div>
 
-    <div style="background:var(--card-bg); border:1px solid rgba(255,190,11,0.3); border-radius:16px; padding:12px; margin-bottom:12px;">
-      <label style="font-size:11px; color:var(--teal); font-weight:bold;">EL TEU NOM O MALNOM VALLER:</label>
-      <div style="display:flex; gap:6px; margin-top:4px;">
-        <input type="text" id="player-nickname" placeholder="Ex: Vicent el de la Goleta" style="flex:1; padding:8px 10px; border-radius:10px; border:1px solid var(--teal); background:rgba(0,0,0,0.4); color:#fff; font-size:12px;" />
-        <button class="btn-action" style="padding:8px 14px; font-size:12px;" onclick="Game.updateNickname()">Guardar</button>
-      </div>
-    </div>
+                <div class="space-y-2">
+                    <button onclick="drinkWater()" class="w-full py-2.5 bg-blue-950/60 text-blue-300 border border-blue-800/60 rounded-xl text-xs font-mono font-bold hover:bg-blue-900 transition flex items-center justify-center space-x-1">
+                        <span>🚰</span>
+                        <span>Beure Got d'Aigua de l'Aixeta (+25% Sobrietat)</span>
+                    </button>
+                    <button onclick="resetData()" class="w-full py-2 bg-red-950/40 text-red-400 border border-red-900/50 rounded-xl text-xs font-mono hover:bg-red-900 transition">
+                        ⚠️ Oblidar la Nit (Reiniciar Dades)
+                    </button>
+                </div>
+            </section>
 
-    <div style="background:var(--card-bg); border:1px solid rgba(0,242,254,0.2); border-radius:16px; padding:10px;">
-      <table class="rank-table" id="leaderboard-table">
-        <!-- Generat dinàmicament -->
-      </table>
-    </div>
-  </section>
+        </main>
 
-  <!-- PANTALLA 4: LLIBRET FÍSIC & QUADERN -->
-  <section id="screen-llibret" class="screen">
-    <div style="margin-bottom:10px;">
-      <div style="font-size:10px; color:var(--teal); font-weight:900;">EDICIÓ IMPRESA 2027</div>
-      <div style="font-size:17px; font-weight:800;">L'Enigma de Paper</div>
-    </div>
+        <!-- BARRA INFERIOR (BOTTOM NAV) -->
+        <nav class="h-20 bg-asphalt border-t border-amber-950/80 flex justify-around items-center px-2 z-20 absolute bottom-0 left-0 right-0">
+            <button onclick="switchTab('map')" id="nav-map" class="nav-btn flex flex-col items-center justify-center flex-1 text-amber-400 transition">
+                <span class="text-2xl">🏮</span>
+                <span class="text-[10px] font-mono mt-1 font-bold">Carrer</span>
+            </button>
+            <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-500 transition hover:text-amber-400">
+                <span class="text-2xl">🎒</span>
+                <span class="text-[10px] font-mono mt-1 font-bold">Butxaca</span>
+            </button>
+            <button onclick="switchTab('fonda')" id="nav-fonda" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-500 transition hover:text-amber-400">
+                <span class="text-2xl">🏨</span>
+                <span class="text-[10px] font-mono mt-1 font-bold">La Fonda</span>
+            </button>
+            <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn flex flex-col items-center justify-center flex-1 text-slate-500 transition hover:text-amber-400">
+                <span class="text-2xl">👤</span>
+                <span class="text-[10px] font-mono mt-1 font-bold">Estat</span>
+            </button>
+        </nav>
 
-    <div style="background:linear-gradient(135deg, rgba(255,190,11,0.15), rgba(0,242,254,0.1)); border:1.5px solid var(--gold); border-radius:16px; padding:14px; margin-bottom:14px;">
-      <div style="font-size:13px; font-weight:800; color:var(--gold); margin-bottom:4px;">📖 Tens el Llibret de la Falla Prado a les mans?</div>
-      <p style="font-size:12px; color:#e2f2fc; line-height:1.4; margin-bottom:10px;">
-        Busca a les últimes pàgines del llibret imprès el codi de la <strong>8a Perla Oculta</strong> i desbloqueja el secret final:
-      </p>
-      <div style="display:flex; gap:6px;">
-        <input type="text" id="paper-code-input" placeholder="Escriu el codi (Ex: PRADO2027)" style="flex:1; padding:8px 10px; border-radius:10px; border:1px solid var(--gold); background:rgba(0,0,0,0.5); color:#fff; font-size:12px; text-transform:uppercase;" />
-        <button class="btn-action" style="padding:8px 14px; font-size:12px;" onclick="Game.unlockPaperCode()">Desxifrar</button>
-      </div>
-    </div>
+        <!-- MODAL 1: ELECCIÓ DE COLLA (ONBOARDING REUSENC) -->
+        <div id="modal-faction" class="fixed inset-0 bg-asphalt/95 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-barDark border border-amber-600/50 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl">
+                <span class="text-4xl">🍷</span>
+                <h2 class="text-xl font-black text-white mt-1">NIT AL CARRER AMPLE</h2>
+                <p class="text-xs font-mono text-amber-400">Reus · Vora la Plaça de la Llibertat</p>
+                <p class="text-xs text-slate-300 mt-2 mb-4">
+                    Abans de passar per davant de la Fonda Suïssa a les 4 de la matinada, tria la teua colla:
+                </p>
 
-    <div style="font-size:14px; font-weight:bold; color:var(--teal); margin-bottom:8px;">Quadern del Naturalista (Tavernes):</div>
-    <div id="notebook-list"></div>
-  </section>
+                <div class="space-y-2 mb-4">
+                    <button onclick="chooseFaction('Vermut')" class="w-full p-2.5 rounded-xl bg-red-950/40 border border-vermutRed hover:bg-red-900/40 transition flex items-center space-x-3 text-left">
+                        <span class="text-2xl">🍷</span>
+                        <div>
+                            <div class="font-bold text-red-400 text-xs">Els Ganxets del Vermut</div>
+                            <div class="text-[10px] text-slate-300">Tradicionals, beuen a qualsevol hora.</div>
+                        </div>
+                    </button>
+                    <button onclick="chooseFaction('Veïns')" class="w-full p-2.5 rounded-xl bg-emerald-950/40 border border-neonGreen hover:bg-emerald-900/40 transition flex items-center space-x-3 text-left">
+                        <span class="text-2xl">👀</span>
+                        <div>
+                            <div class="font-bold text-neonGreen text-xs">La Resistència del Carrer Ample</div>
+                            <div class="text-[10px] text-slate-300">Ho han vist tot des del balcó. Res els espanta.</div>
+                        </div>
+                    </button>
+                    <button onclick="chooseFaction('Noctàmbuls')" class="w-full p-2.5 rounded-xl bg-amber-950/40 border border-amber-500 hover:bg-amber-900/40 transition flex items-center space-x-3 text-left">
+                        <span class="text-2xl">🦉</span>
+                        <div>
+                            <div class="font-bold text-amber-400 text-xs">Els Perduts del Plim</div>
+                            <div class="text-[10px] text-slate-300">Mesclen begudes rares i no saben tornar a casa.</div>
+                        </div>
+                    </button>
+                </div>
 
-  <!-- PANTALLA DE MISSIÓ ACTIVA -->
-  <section id="screen-mission" class="screen">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <button onclick="Game.showScreen('screen-map')" style="background: none; border: none; color: var(--teal); font-weight: 800; font-size: 13px; cursor: pointer;">
-        ← Mapa
-      </button>
-      <span id="mission-zone-title" style="font-size: 12px; color: var(--gold); font-weight: 800;">ZONA 1</span>
-    </div>
+                <input type="text" id="input-username" placeholder="El teu nom / malnom de Reus" maxlength="15" class="w-full bg-asphalt border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono mb-3 focus:outline-none focus:border-amber-500 text-center">
 
-    <div style="background:var(--card-bg); border:1px solid rgba(0,242,254,0.3); border-radius:16px; padding:10px; display:flex; gap:10px; margin-bottom:10px;">
-      <div id="mission-npc-avatar" style="font-size:28px; width:44px; height:44px; border-radius:50%; background:radial-gradient(circle, var(--teal), #003a5c); display:flex; align-items:center; justify-content:center; flex-shrink:0; border:2px solid var(--teal);">🧜‍♀️</div>
-      <div>
-        <div id="mission-npc-name" style="font-size: 11px; font-weight: 800; color: var(--teal); text-transform: uppercase;">Naia</div>
-        <div id="mission-npc-dialogue" style="font-size: 12.5px; line-height: 1.4; color: #eaf5fc; font-style: italic;">...</div>
-      </div>
-    </div>
-
-    <div class="game-arena" id="mission-game-arena"></div>
-  </section>
-
-  <!-- NAVEGACIÓ INFERIOR APP -->
-  <nav id="app-nav">
-    <button class="nav-btn active" id="nav-btn-map" onclick="Game.showScreen('screen-map')">
-      <span class="icon">🗺️</span>
-      <span>Mapa</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-refugi" onclick="Game.showScreen('screen-refugi')">
-      <span class="icon">🐠</span>
-      <span>Refugi</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-rank" onclick="Game.showScreen('screen-rank')">
-      <span class="icon">🏆</span>
-      <span>Rànquing</span>
-    </button>
-    <button class="nav-btn" id="nav-btn-llibret" onclick="Game.showScreen('screen-llibret')">
-      <span class="icon">📖</span>
-      <span>Llibret</span>
-    </button>
-  </nav>
-</div>
-
-<!-- MODAL GENÈRIC -->
-<div class="modal-overlay" id="app-modal">
-  <div class="modal-card" id="modal-content"></div>
-</div>
-
-<!-- MODAL GAME OVER -->
-<div class="modal-overlay" id="game-over-modal">
-  <div class="modal-card" style="border-color: var(--fire); text-align: center;">
-    <div style="font-size: 46px; margin-bottom: 6px;">🧨💨</div>
-    <h3 style="color: var(--fire); font-size: 19px; margin-bottom: 6px;">SENSE METXA SUBMARINA!</h3>
-    <p style="font-size: 12.5px; color: #cfe7f7; line-height: 1.45; margin-bottom: 14px;">
-      La pressió del mar de Tavernes ha ofegat els teus tirs. Comparteix el teu progrés per rebre <strong>+3 Vides</strong> i <strong>+100 Punts de Pòlvora</strong>!
-    </p>
-
-    <button style="width:100%; padding:12px; border-radius:14px; background:#25D366; color:#fff; font-weight:800; font-size:13px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;" onclick="Game.shareRecover('whatsapp')">
-      <span>💬</span> Compartir per WhatsApp
-    </button>
-
-    <button style="width:100%; padding:12px; border-radius:14px; background:linear-gradient(45deg, #f09433, #dc2743, #bc1888); color:#fff; font-weight:800; font-size:13px; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="Game.shareRecover('instagram')">
-      <span>📸</span> Pujar a Instagram Stories
-    </button>
-  </div>
-</div>
-
-<!-- CANVAS OCULT PER GENERAR EL CROMO 9:16 -->
-<canvas id="cromo-canvas" width="720" height="1280" style="display:none;"></canvas>
-
-<script>
-/**
- * 1. INICI DE L'APP & SPLASH DE 4 SEGONS
- */
-window.addEventListener("DOMContentLoaded", () => {
-  setTimeout(() => {
-    const splash = document.getElementById("splash-screen");
-    if (splash) splash.classList.add("fade-out");
-  }, 4000);
-
-  Game.init();
-});
-
-/**
- * 2. MOTOR D'ÀUDIO SINTETITZAT
- */
-const AudioEngine = {
-  ctx: null,
-  active: true,
-  init() {
-    if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      this.ctx = new AudioCtx();
-    }
-  },
-  play(freq, type = 'sine', duration = 0.2, gainVol = 0.2) {
-    if (!this.active || !this.ctx) return;
-    const osc = this.ctx.createOscillator();
-    const g = this.ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-    g.gain.setValueAtTime(gainVol, this.ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-    osc.connect(g);
-    g.connect(this.ctx.destination);
-    osc.start();
-    osc.stop(this.ctx.currentTime + duration);
-  },
-  sonar() {
-    this.play(600, 'sine', 0.5, 0.2);
-    setTimeout(() => this.play(880, 'sine', 0.35, 0.15), 100);
-  },
-  bubble() { this.play(400, 'sine', 0.1); },
-  chime() { this.play(880, 'triangle', 0.8, 0.25); },
-  fail() { this.play(130, 'sawtooth', 0.3, 0.25); },
-  traca() {
-    this.play(180, 'square', 0.08, 0.3);
-    setTimeout(() => this.play(120, 'sawtooth', 0.12, 0.3), 60);
-  }
-};
-
-/**
- * 3. CONFIGURACIÓ DE LES 7 ZONES + SECRETA
- */
-const ZONES_DATA = [
-  { id: 1, title: "La Badia de les Paraules Perdudes", subtitle: "Llengua i Identitat Vallera", icon: "🗣️", desc: "Reconeix les dites de Tavernes per a que el mar recupere la memòria." },
-  { id: 2, title: "El Bosc que Respira", subtitle: "Tacte: Mou la Posidònia", icon: "🌿", desc: "Aparta les fulles de Posidonia oceanica per trobar el cavallet amagat." },
-  { id: 3, title: "El Polp Mentider", subtitle: "Tacte: Rasca la Roca", icon: "🐙", desc: "Rasca la textura de granit amb el dit fins a revelar el polp camuflat." },
-  { id: 4, title: "Les Petjades de l'Arena", subtitle: "Detectius de La Goleta", icon: "👣", desc: "Reconstrueix els rastres que deixen la rajada i altres criatures." },
-  { id: 5, title: "El Taller Faller Abissal", subtitle: "Identitat Falla Prado", icon: "🎨", desc: "Construeix i bateja el teu ninot per plantar-lo al refugi submarí." },
-  { id: 6, title: "La Mascletà de les Bombolles", subtitle: "Ritme i Vibració Marina", icon: "🫧", desc: "Reprodueix la seqüència de llum i pólvora silenciosa submarina." },
-  { id: 7, title: "La Plantà de Nacre", subtitle: "Gran Final Comunitari", icon: "🏛️", desc: "Reuneix les perles, alça el monument i tria el destí del mar." }
-];
-
-/**
- * 4. CONTROLADOR GENERAL DEL JOC
- */
-const Game = {
-  state: {
-    nickname: "Faller de Prado",
-    lives: 3,
-    points: 100,
-    completedZones: [],
-    currentZoneId: 1,
-    unlockedSecret8: false,
-    customNinot: null,
-    playerTitle: null,
-    notebookUnlocked: [
-      { name: "Posidonia oceanica", text: "Planta marina autòctona amb flors i arrels. Genera oxigen i ancora les platges de Tavernes." }
-    ],
-    leaderboard: [
-      { name: "Neptú de Prado", score: 650 },
-      { name: "Vicent el de la Goleta", score: 520 },
-      { name: "La Xica del Clot", score: 480 },
-      { name: "Faller Major 2027", score: 390 }
-    ]
-  },
-
-  init() {
-    this.load();
-    this.updateHUD();
-    this.renderMap();
-    this.renderNotebook();
-    this.renderLeaderboard();
-    this.initAquarium();
-  },
-
-  load() {
-    try {
-      const raw = localStorage.getItem("nacre_prado_2027_v3");
-      if (raw) Object.assign(this.state, JSON.parse(raw));
-    } catch(e) {}
-    document.getElementById("player-nickname").value = this.state.nickname;
-  },
-
-  save() {
-    try {
-      localStorage.setItem("nacre_prado_2027_v3", JSON.stringify(this.state));
-    } catch(e) {}
-    this.updateHUD();
-    this.renderMap();
-    this.renderLeaderboard();
-  },
-
-  updateHUD() {
-    document.getElementById("lives-display").innerText = `${this.state.lives}/3`;
-    document.getElementById("points-display").innerText = `${this.state.points} Pts`;
-    const totalPearls = this.state.completedZones.length + (this.state.unlockedSecret8 ? 1 : 0);
-    document.getElementById("pearls-display").innerText = `${totalPearls}/8`;
-  },
-
-  updateNickname() {
-    const val = document.getElementById("player-nickname").value.trim();
-    if (val) {
-      this.state.nickname = val;
-      this.save();
-      AudioEngine.chime();
-      alert("Nom actualitzat al rànquing de la comissió!");
-    }
-  },
-
-  loseLife(feedbackText) {
-    AudioEngine.fail();
-    if (navigator.vibrate) navigator.vibrate([100, 60, 100]);
-    this.state.lives--;
-    this.updateHUD();
-
-    if (this.state.lives <= 0) {
-      this.state.lives = 0;
-      this.updateHUD();
-      document.getElementById("game-over-modal").style.display = "flex";
-    } else {
-      alert(`${feedbackText}\nHas perdut una metxa! Te'n queden: ${this.state.lives}/3`);
-    }
-  },
-
-  shareRecover(platform) {
-    const text = `🔥 Estic salvant el fons marí de Tavernes amb la Falla Prado 2027! Tinc ${this.state.points} punts de pólvora. Ajuda'm a guanyar el 1r premi! 🌊 #FallaPrado2027`;
-    
-    if (platform === 'whatsapp') {
-      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + window.location.href)}`;
-      window.open(url, '_blank');
-    } else {
-      if (navigator.share) {
-        navigator.share({ title: "Falla Prado 2027", text: text, url: window.location.href }).catch(() => {});
-      } else {
-        navigator.clipboard?.writeText(text);
-        alert("Text copiat al portapapers! Obre Instagram per publicar-lo a les teues Stories.");
-        window.location.href = "instagram://story-camera";
-      }
-    }
-
-    setTimeout(() => {
-      this.state.lives = 3;
-      this.state.points += 100;
-      this.save();
-      AudioEngine.chime();
-      document.getElementById("game-over-modal").style.display = "none";
-      alert("✨ METXES I PÒLVORA RECARREGADES! (+3 Vides i +100 Punts)");
-    }, 1200);
-  },
-
-  showScreen(id) {
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    const target = document.getElementById(id);
-    if (target) target.classList.add("active");
-
-    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-    const navMap = {
-      'screen-map': 'nav-btn-map',
-      'screen-refugi': 'nav-btn-refugi',
-      'screen-rank': 'nav-btn-rank',
-      'screen-llibret': 'nav-btn-llibret'
-    };
-    if (navMap[id]) document.getElementById(navMap[id]).classList.add("active");
-  },
-
-  playTransitionMap(destName, depth, callback) {
-    const trans = document.getElementById("screen-transition");
-    document.getElementById("transit-node-name").innerText = `RUMB A: ${destName.toUpperCase()}`;
-    document.getElementById("transit-depth-val").innerText = `FONDÀRIA: -${depth}m`;
-    trans.style.display = "flex";
-    AudioEngine.sonar();
-
-    const glow = document.getElementById("transit-glow-path");
-    const swimmer = document.getElementById("swimmer-avatar");
-
-    glow.style.transition = "none";
-    glow.style.strokeDashoffset = "500";
-
-    setTimeout(() => {
-      glow.style.transition = "stroke-dashoffset 2s ease-in-out";
-      glow.style.strokeDashoffset = "0";
-      swimmer.style.transition = "transform 2s ease-in-out";
-
-      const coords = [
-        { x: 60, y: 50 },
-        { x: 150, y: 95 },
-        { x: 240, y: 140 },
-        { x: 170, y: 185 },
-        { x: 100, y: 230 },
-        { x: 160, y: 275 },
-        { x: 220, y: 310 }
-      ];
-      const targetPos = coords[Math.min(coords.length - 1, Math.floor(depth / 6))];
-      swimmer.setAttribute("transform", `translate(${targetPos.x}, ${targetPos.y})`);
-    }, 80);
-
-    setTimeout(() => {
-      trans.style.display = "none";
-      if (callback) callback();
-    }, 2200);
-  },
-
-  renderMap() {
-    const container = document.getElementById("zones-list");
-    if (!container) return;
-    container.innerHTML = "";
-
-    ZONES_DATA.forEach(zone => {
-      const isCompleted = this.state.completedZones.includes(zone.id);
-      const isAvailable = zone.id === 1 || this.state.completedZones.includes(zone.id - 1);
-      
-      const item = document.createElement("div");
-      item.className = `zone-item ${isCompleted ? 'completed' : isAvailable ? 'available' : 'locked'}`;
-      
-      let badgeHtml = `<span class="zone-badge badge-locked">Bloquejada</span>`;
-      if (isCompleted) badgeHtml = `<span class="zone-badge badge-completed">Completada</span>`;
-      else if (isAvailable) badgeHtml = `<span class="zone-badge badge-available">Disponible</span>`;
-
-      item.innerHTML = `
-        ${badgeHtml}
-        <div class="zone-icon">${zone.icon}</div>
-        <div style="flex:1;">
-          <div style="font-size:10px; color:var(--teal); font-weight:800; text-transform:uppercase;">${zone.subtitle}</div>
-          <div style="font-size:14px; font-weight:800; color:#fff; margin:2px 0 3px;">${zone.title}</div>
-          <div style="font-size:11.5px; color:#95c1d8; line-height:1.3;">${zone.desc}</div>
+                <button onclick="confirmOnboarding()" class="w-full py-3 bg-amber-500 text-asphalt font-black rounded-xl uppercase tracking-wider text-xs shadow-lg shadow-amber-500/20">
+                    Sortir al Carrer
+                </button>
+            </div>
         </div>
-      `;
 
-      if (isAvailable || isCompleted) {
-        item.onclick = () => {
-          AudioEngine.bubble();
-          Game.playTransitionMap(zone.title, zone.id * 6, () => {
-            Game.startChapter(zone.id);
-          });
+        <!-- MODAL 2: TROBALLA D'OBJECTE CURIÓS -->
+        <div id="modal-reveal" class="fixed inset-0 bg-asphalt/95 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+            <div id="reveal-card" class="bg-barDark border border-amber-500 rounded-2xl p-5 w-full max-w-sm text-center">
+                <div id="reveal-tag" class="inline-block text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold uppercase mb-2 bg-amber-950 text-amber-300 border border-amber-600">
+                    Trasto Raro
+                </div>
+                
+                <div id="reveal-icon" class="text-6xl my-3">
+                    🗑️
+                </div>
+
+                <h3 id="reveal-name" class="text-lg font-black text-white">Xapa esclafada de cervesa</h3>
+                <p id="reveal-location" class="text-[11px] text-amber-400 font-mono mt-0.5">Trobat a: Carrer Ample 14</p>
+                <p id="reveal-desc" class="text-xs text-slate-300 mt-2 italic px-2">"Sembla pura brossa, però algú a la Fonda Suïssa li trobarà profit."</p>
+
+                <div class="my-4 py-2 bg-asphalt rounded-xl border border-slate-800 flex justify-around font-mono text-xs">
+                    <div>
+                        <span class="text-slate-400 block text-[9px]">REPUTACIÓ</span>
+                        <span id="reveal-rep" class="text-emerald-400 font-bold">+15 Rep</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 block text-[9px]">MONEDES</span>
+                        <span id="reveal-coins" class="text-amber-400 font-bold">+5 🪙</span>
+                    </div>
+                </div>
+
+                <button onclick="closeRevealModal()" class="w-full py-2.5 bg-amber-500 text-asphalt font-bold rounded-xl text-xs uppercase tracking-wider">
+                    Ficar a la Butxaca
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL 3: L'INDIVIDU DEL "SALE! SALE!" (EVENT SOOBTAT) -->
+        <div id="modal-sale" class="fixed inset-0 bg-red-950/90 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-asphalt border-4 border-neonDanger rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl relative">
+                
+                <span class="text-6xl inline-block animate-bounce">⚡🏃🏽‍♂️💨</span>
+                
+                <h2 class="text-3xl font-black text-neonDanger tracking-tighter mt-2 animate-pulse">
+                    "SALE! SALE! SALE!"
+                </h2>
+                
+                <p class="text-xs font-mono text-amber-400 mt-2 font-bold uppercase">
+                    ⚠️ T'HAN ENXAMPAT EN PLE CARRER AMPLE!
+                </p>
+
+                <div class="bg-barDark p-3 rounded-xl border border-red-900/80 my-3 text-xs text-slate-200 text-left space-y-1">
+                    <p>Un personatge d'ulls oberts com a plats se't planta al davant fent esses, assenyalant la porta de la Fonda Suïssa i cridant a ple pulmó:</p>
+                    <p class="font-bold text-red-400 italic">"SALE O NO SALE?! QUÈ FAS AQUÍ AQUESTES HORES?!"</p>
+                </div>
+
+                <!-- Opcions de Reacció -->
+                <div class="space-y-2 mt-4">
+                    <button onclick="handleSaleReaction('shout')" class="w-full py-2.5 bg-neonDanger text-white font-black rounded-xl text-xs uppercase tracking-wider hover:bg-red-600 transition">
+                        🗣️ Cridar-li tu també: "SALE! SALE!"
+                    </button>
+                    <button onclick="handleSaleReaction('bribe')" class="w-full py-2.5 bg-amber-600 text-asphalt font-black rounded-xl text-xs uppercase tracking-wider hover:bg-amber-500 transition">
+                        🪙 Donar-li 10 monedes perquè marxi
+                    </button>
+                    <button onclick="handleSaleReaction('run')" class="w-full py-2.5 bg-slate-800 text-slate-300 font-bold rounded-xl text-xs uppercase tracking-wider hover:bg-slate-700 transition">
+                        🏃 Córrer cap a la Plaça de la Llibertat
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT DEL JOC -->
+    <script>
+        /* =========================================================================
+           1. ZONES DE REUS (CARRER AMPLE & ENTORNS)
+           ========================================================================= */
+        const ZONES_REUS = [
+            { id: 1, name: "Fonda Suïssa (Portal del Bar)", vibe: "Caos Total", dangerLevel: "Altíssim" },
+            { id: 2, name: "Plaça de la Llibertat (Bancs del mig)", vibe: "Brisa Fresca", dangerLevel: "Mitjà" },
+            { id: 3, name: "Carrer Ample (Tram Fosc davant del taller)", vibe: "Passos Ràpids", dangerLevel: "Alt" },
+            { id: 4, name: "Carrer Ample (Tocant a Plaça del Víctor)", vibe: "Olor de Cafè matiner", dangerLevel: "Baix" },
+            { id: 5, name: "Cruïlla Carrer Ample amb Prat de la Riba", vibe: "Fanal espatllat", dangerLevel: "Mitjà" }
+        ];
+
+        /* =========================================================================
+           2. BESTIARI D'OBJECTES CURIOSOS I APPARENTMENT INÚTILS
+           ========================================================================= */
+        const OBJECTES_CURIOSOS = [
+            {
+                code: 'xapa',
+                name: "Xapa esclafada de cervesa",
+                emoji: "🪙",
+                rarity: "Brossa d'Or",
+                rep: 15,
+                coins: 5,
+                desc: "Plana del tot per haver estat trepitjada per 400 persones. Sembla inservible, però és perfecta per calçar la taula coixa del fons de la Fonda.",
+                usefulInfo: "Porta-la a l'home de la boina a la Fonda."
+            },
+            {
+                code: 'clau',
+                name: "Clau rovellada sense amo",
+                emoji: "🗝️",
+                rarity: "Misteri Ganxet",
+                rep: 35,
+                coins: 10,
+                desc: "No saps quina porta obre. Porta una cinta aïllant negra i fa pudor d'humitat de celler.",
+                usefulInfo: "A la Fonda Suïssa algú sap quin armari obre..."
+            },
+            {
+                code: 'dau',
+                name: "Dau de parxís gastat",
+                emoji: "🎲",
+                rarity: "Relíquia de Barra",
+                rep: 40,
+                coins: 15,
+                desc: "Els punts negres estan pràcticament esborrats de tant picar la taula de formica.",
+                usefulInfo: "Els jugadors de la Fonda en necessiten un desesperadament."
+            },
+            {
+                code: 'clipper',
+                name: "Encenedor Clipper sense pedra",
+                emoji: "🔥",
+                rarity: "Clàssic del Carrer",
+                rep: 20,
+                coins: 8,
+                desc: "Té gas, però no fa espurna ni que et deixis el dit polze intentant-ho.",
+                usefulInfo: "Combinable en futures versions."
+            },
+            {
+                code: 'tiquet',
+                name: "Tiquet de Bonoloto xop del 2018",
+                emoji: "🧾",
+                rarity: "Paper Mullat",
+                rep: 10,
+                coins: 2,
+                desc: "Els números amb prou feines es llegeixen. Té una taca de vermut Miró al mig.",
+                usefulInfo: "Pura poesia decadent."
+            },
+            {
+                code: 'oliva',
+                name: "Brocada amb oliva pansida",
+                emoji: "🫒",
+                rarity: "Tapa Fòssil",
+                rep: 25,
+                coins: 12,
+                desc: "Un escuradents amb una oliva farcida que porta hores sobre el taulell metàl·lic.",
+                usefulInfo: "Només apte per a estómacs d'acer."
+            }
+        ];
+
+        /* =========================================================================
+           3. ESTAT I PERSISTÈNCIA (LOCALSTORAGE)
+           ========================================================================= */
+        const STORAGE_KEY = "reus_fonda_suissa_state";
+
+        let gameState = {
+            user: null,
+            faction: null,
+            sobriety: 100, // Energia (es gasta explorant)
+            coins: 30,     // Monedes
+            rep: 0,        // Reputació / XP
+            level: 1,
+            locationIdx: 0,
+            inventory: {}  // { code: count }
         };
-      }
 
-      container.appendChild(item);
-    });
-  },
-
-  startChapter(zoneId) {
-    this.state.currentZoneId = zoneId;
-    this.showScreen("screen-mission");
-    const zone = ZONES_DATA.find(z => z.id === zoneId);
-    document.getElementById("mission-zone-title").innerText = `ZONA ${zoneId} · ${zone.subtitle.toUpperCase()}`;
-
-    switch(zoneId) {
-      case 1: this.playZone1(); break;
-      case 2: this.playZone2_PosidoniaTactil(); break;
-      case 3: this.playZone3_PolpTactil(); break;
-      case 4: this.playZone4(); break;
-      case 5: this.playZone5(); break;
-      case 6: this.playZone6(); break;
-      case 7: this.playZone7(); break;
-    }
-  },
-
-  completeCurrentZone(pearlMsg, notebookEntry = null) {
-    if (!this.state.completedZones.includes(this.state.currentZoneId)) {
-      this.state.completedZones.push(this.state.currentZoneId);
-      this.state.points += 60;
-    }
-    if (notebookEntry && !this.state.notebookUnlocked.some(n => n.name === notebookEntry.name)) {
-      this.state.notebookUnlocked.push(notebookEntry);
-    }
-    this.save();
-    AudioEngine.chime();
-    if (navigator.vibrate) navigator.vibrate([60, 80, 100]);
-
-    this.showModal(`
-      <div style="text-align:center;">
-        <div style="font-size:44px; margin-bottom:8px;">✨💎</div>
-        <h3 style="color:var(--gold); font-size:18px; margin-bottom:6px;">PERLA RECUPERADA! (+60 Pts)</h3>
-        <p style="font-size:13px; line-height:1.45; color:#d6edf9; margin-bottom:14px;">${pearlMsg}</p>
-        <button class="btn-action" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="Game.openCromoGenerator()">
-          <span>📸</span> DESCARREGAR CROMO STORIES
-        </button>
-        <button class="btn-action" style="width:100%; justify-content:center; background:rgba(255,255,255,0.1); color:#fff;" onclick="Game.closeModal(); Game.showScreen('screen-map');">
-          TORNAR AL MAPA
-        </button>
-      </div>
-    `);
-  },
-
-  showModal(html) {
-    const modal = document.getElementById("app-modal");
-    document.getElementById("modal-content").innerHTML = html;
-    modal.style.display = "flex";
-  },
-
-  closeModal() {
-    document.getElementById("app-modal").style.display = "none";
-  },
-
-  /**
-   * 5. GENERADOR DE CROMOS PER A INSTAGRAM STORIES (CANVAS 9:16)
-   */
-  openCromoGenerator() {
-    const canvas = document.getElementById("cromo-canvas");
-    const ctx = canvas.getContext("2d");
-
-    // Fons degradat
-    const grad = ctx.createLinearGradient(0, 0, 0, 1280);
-    grad.addColorStop(0, "#010e18");
-    grad.addColorStop(0.35, "#04304e");
-    grad.addColorStop(0.7, "#021c2e");
-    grad.addColorStop(1, "#010910");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 720, 1280);
-
-    // Marc bioluminescent
-    ctx.strokeStyle = "#00f2fe";
-    ctx.lineWidth = 10;
-    ctx.strokeRect(30, 30, 660, 1220);
-
-    ctx.strokeStyle = "#ffbe0b";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(40, 40, 640, 1200);
-
-    // Capçalera
-    ctx.fillStyle = "#ffbe0b";
-    ctx.font = "bold 26px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("LLIBRET DE LA FALLA PRADO 2027", 360, 120);
-
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "900 48px Georgia, serif";
-    ctx.fillText("NACRE: FONS MARÍ", 360, 185);
-
-    // Il·lustració central
-    ctx.font = "140px sans-serif";
-    ctx.fillText(this.state.customNinot ? "🎭🧜‍♀️" : "✨🪸", 360, 420);
-
-    // Targeta d'Assoliment
-    ctx.fillStyle = "rgba(4, 25, 41, 0.85)";
-    ctx.strokeStyle = "#00f2fe";
-    ctx.lineWidth = 3;
-    ctx.roundRect(80, 520, 560, 460, 30);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = "#ffbe0b";
-    ctx.font = "bold 32px sans-serif";
-    ctx.fillText(this.state.nickname.toUpperCase(), 360, 600);
-
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "24px sans-serif";
-    ctx.fillText(`Puntuació de Pòlvora: ${this.state.points} 🧨`, 360, 670);
-    ctx.fillText(`Perles Salvades: ${this.state.completedZones.length}/8 ✨`, 360, 730);
-    
-    const ninotNom = this.state.customNinot ? this.state.customNinot.name : "Submarí Enigma";
-    ctx.fillText(`Ninot Plantat: "${ninotNom}"`, 360, 790);
-
-    ctx.fillStyle = "#10b981";
-    ctx.font = "italic 22px sans-serif";
-    ctx.fillText("Ecosistema de Tavernes de la Valldigna", 360, 860);
-
-    // Crida per xarxes
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 26px sans-serif";
-    ctx.fillText("Guanyador del 1r Premi · 17 de Març 2027", 360, 1080);
-
-    ctx.fillStyle = "#00f2fe";
-    ctx.font = "22px sans-serif";
-    ctx.fillText("@fallaprado #TavernesDeLaValldigna #Nacre2027", 360, 1130);
-
-    // Descàrrega directa al telèfon
-    const dataURL = canvas.toDataURL("image/png");
-    const a = document.createElement("a");
-    a.href = dataURL;
-    a.download = `cromo-falla-prado-${this.state.nickname.replace(/\s+/g,'_')}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    alert("📸 Cromo generat i descarregat a la teua galeria! Puja'l directament a les teues Stories d'Instagram!");
-  },
-
-  /**
-   * 6. ENIGMA DEL LLIBRET IMPRÈS
-   */
-  unlockPaperCode() {
-    const input = document.getElementById("paper-code-input").value.trim().toUpperCase();
-    if (input === "PRADO2027" || input === "CLOT2027" || input === "LLIBRET2027") {
-      if (this.state.unlockedSecret8) {
-        alert("Ja havies desxifrat el codi del llibret imprès!");
-        return;
-      }
-      this.state.unlockedSecret8 = true;
-      this.state.points += 250;
-      this.state.notebookUnlocked.push({
-        name: "La Perla de Paper (Secreta)",
-        text: "La veu escrita de la comissió. La unió entre la tinta del llibret i les profunditats del mar de Tavernes."
-      });
-      this.save();
-      AudioEngine.chime();
-      AudioEngine.traca();
-      alert("🎉 CODI CORRECTE! Has desbloquejat la 8a Perla Secreta i +250 Punts de Pòlvora!");
-      this.renderNotebook();
-    } else {
-      AudioEngine.fail();
-      alert("Codi incorrecte! Obre el llibret imprès de la Falla Prado 2027 i cerca a les últimes pàgines.");
-    }
-  },
-
-  renderNotebook() {
-    const c = document.getElementById("notebook-list");
-    if (!c) return;
-    c.innerHTML = this.state.notebookUnlocked.map(item => `
-      <div style="background:rgba(255,255,255,0.06); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid rgba(0,242,254,0.15);">
-        <div style="font-weight:800; color:var(--teal); font-size:13px;">${item.name}</div>
-        <div style="font-size:12px; color:#cce7f5; margin-top:3px; line-height:1.35;">${item.text}</div>
-      </div>
-    `).join("");
-  },
-
-  renderLeaderboard() {
-    const table = document.getElementById("leaderboard-table");
-    if (!table) return;
-
-    // Combina jugador amb líders
-    const list = [...this.state.leaderboard];
-    const exists = list.find(x => x.name === this.state.nickname);
-    if (exists) exists.score = this.state.points;
-    else list.push({ name: this.state.nickname, score: this.state.points });
-
-    list.sort((a,b) => b.score - a.score);
-
-    table.innerHTML = `
-      <thead>
-        <tr style="color:var(--gold); border-bottom:1px solid rgba(255,190,11,0.3);">
-          <th>#</th>
-          <th>Faller / Malnom</th>
-          <th>Pòlvora</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${list.map((item, idx) => `
-          <tr class="${item.name === this.state.nickname ? 'me' : ''}">
-            <td>${idx + 1}</td>
-            <td>${item.name}</td>
-            <td style="color:var(--gold); font-weight:bold;">${item.score} 🧨</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    `;
-  },
-
-  /**
-   * 7. EL REFUGI (AQUARI VIU)
-   */
-  initAquarium() {
-    const canvas = document.getElementById("aquarium-canvas");
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    let t = 0;
-
-    const loop = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      t += 0.03;
-
-      // Caústiques de llum solar
-      ctx.fillStyle = "rgba(0, 242, 254, 0.05)";
-      ctx.beginPath();
-      ctx.arc(170 + Math.sin(t)*50, 60, 90, 0, Math.PI*2);
-      ctx.fill();
-
-      // Posidònia que oneja
-      const leaves = 8;
-      ctx.strokeStyle = "#10b981";
-      ctx.lineWidth = 6;
-      ctx.lineCap = "round";
-      for (let i = 0; i < leaves; i++) {
-        const x = 30 + i * 40;
-        ctx.beginPath();
-        ctx.moveTo(x, 320);
-        ctx.quadraticCurveTo(x + Math.sin(t + i)*25, 200, x + Math.sin(t + i*1.2)*35, 120);
-        ctx.stroke();
-      }
-
-      // Si ha salvat el ninot, es dibuixa plantat
-      if (Game.state.customNinot) {
-        ctx.font = "48px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("🧜‍♂️", 170, 290);
-        ctx.fillStyle = "#ffbe0b";
-        ctx.font = "bold 11px sans-serif";
-        ctx.fillText(Game.state.customNinot.name, 170, 310);
-      }
-
-      // Cavallet de mar nadant en temps real
-      const seahorseY = 140 + Math.sin(t*2)*20;
-      const seahorseX = 80 + Math.cos(t)*40;
-      ctx.font = "28px sans-serif";
-      ctx.fillText("✨", seahorseX, seahorseY);
-
-      requestAnimationFrame(loop);
-    };
-    loop();
-  },
-
-  /* ================= LES PROVES I MINI-JOCS TÀCTILS ================= */
-
-  // ZONA 1: DITA VALLERA
-  playZone1() {
-    document.getElementById("mission-npc-name").innerText = "Naia, la sirena";
-    document.getElementById("mission-npc-dialogue").innerText = "«Xe, foraster! Ací baix les paraules tenen ànima. Per recuperar la primera perla, has de demostrar que parles com la gent de Tavernes!»";
-    const arena = document.getElementById("mission-game-arena");
-
-    arena.innerHTML = `
-      <div style="font-size:13px; font-weight:800; color:var(--gold); margin-bottom:8px;">Prova 1: La dita de la costa</div>
-      <p style="font-size:13px; margin-bottom:14px;">«A Tavernes quan arriba juliol i apreta la calor, la gent del poble no diu pas que se'n va a la platja; diu que se'n va a...»</p>
-      <button class="btn-choice" onclick="Game.loseLife('Això és massa modern! A Tavernes es diu d\\'una altra manera tradicional.')">A) La piscina municipal</button>
-      <button class="btn-choice" onclick="Game.zone1Step2()">B) La mar</button>
-      <button class="btn-choice" onclick="Game.loseLife('No! La paraula tradicional no és eixa.')">C) L'arena</button>
-    `;
-  },
-
-  zone1Step2() {
-    AudioEngine.chime();
-    this.playTransitionMap("Carrer Major / Arrels", 4, () => {
-      const arena = document.getElementById("mission-game-arena");
-      arena.innerHTML = `
-        <div style="font-size:13px; font-weight:800; color:var(--gold); margin-bottom:8px;">Prova 2: Els orígens</div>
-        <p style="font-size:13px; margin-bottom:14px;">«Si una persona major del poble et mira i et pregunta: <em>'I tu de qui eres, rei?'</em>, què vol saber exactament?»</p>
-        <button class="btn-choice" onclick="Game.loseLife('El DNI no li interessa a una àvia de Tavernes!')">A) Quin és el teu DNI oficial</button>
-        <button class="btn-choice" onclick="Game.completeCurrentZone('Les paraules antigues de Tavernes han tornat a fluir pels corrents. Has desbloquejat la Perla de la Llengua!', { name: 'Dites de la Valldigna', text: 'L expressió anar a la mar i l arrel dels malnoms familiars connecten la gent amb el seu poble.' })">B) De quina família véns i quin malnom teniu a Tavernes</button>
-        <button class="btn-choice" onclick="Game.loseLife('No només el carrer, sinó la teua família sencera!')">C) On vius ara mateix</button>
-      `;
-    });
-  },
-
-  // ZONA 2: POSIDÒNIA TÀCTIL (MOU AMB EL DIT)
-  playZone2_PosidoniaTactil() {
-    document.getElementById("mission-npc-name").innerText = "Brisa, el cavallet lluminós";
-    document.getElementById("mission-npc-dialogue").innerText = "«Aparta les fulles de Posidonia oceanica amb el teu dit per netejar la clariana i trobar el cavallet de mar de musell llarg!»";
-    const arena = document.getElementById("mission-game-arena");
-
-    arena.innerHTML = `
-      <div style="font-size:13px; font-weight:800; color:var(--gold); margin-bottom:4px;">Repte Tàctil: Neteja la Posidònia</div>
-      <p style="font-size:11.5px; color:#c7e6f8; margin-bottom:6px;">Fes lliscar el dit per la praderia per obrir pas:</p>
-      
-      <div class="touch-canvas-wrapper">
-        <canvas id="posidonia-canvas" width="320" height="220"></canvas>
-      </div>
-
-      <div id="posidonia-feedback" style="font-size:12px; color:var(--teal); font-weight:bold; text-align:center;">
-        Praderia coberta: 100%
-      </div>
-    `;
-
-    setTimeout(() => {
-      const c = document.getElementById("posidonia-canvas");
-      const ctx = c.getContext("2d");
-      
-      // Fons amb el cavallet
-      ctx.fillStyle = "#042033";
-      ctx.fillRect(0,0,320,220);
-      ctx.font = "50px sans-serif";
-      ctx.fillText("✨", 140, 120);
-
-      // Capa verda superior que es rasca
-      const maskCanvas = document.createElement("canvas");
-      maskCanvas.width = 320;
-      maskCanvas.height = 220;
-      const mCtx = maskCanvas.getContext("2d");
-      mCtx.fillStyle = "#0d5c3a";
-      mCtx.fillRect(0, 0, 320, 220);
-      mCtx.fillStyle = "#10b981";
-      for(let i=0; i<30; i++) {
-        mCtx.fillRect(i*12, 0, 8, 220);
-      }
-
-      let cleared = 0;
-      const draw = () => {
-        ctx.drawImage(maskCanvas, 0, 0);
-      };
-      draw();
-
-      const scratch = (x, y) => {
-        mCtx.globalCompositeOperation = "destination-out";
-        mCtx.beginPath();
-        mCtx.arc(x, y, 25, 0, Math.PI*2);
-        mCtx.fill();
-        draw();
-        cleared++;
-        AudioEngine.bubble();
-
-        const pct = Math.max(0, 100 - Math.floor(cleared * 2.5));
-        document.getElementById("posidonia-feedback").innerText = `Fulles apartades! Resta: ${pct}%`;
-
-        if (cleared >= 35) {
-          Game.completeCurrentZone(
-            "Has obert la praderia de Posidonia oceanica i rescatat el cavallet Hippocampus guttulatus!",
-            { name: "Hippocampus guttulatus", text: "Cavallet de mar de musell llarg de Tavernes protegit per la densitat de la posidònia." }
-          );
+        function loadGame() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    gameState = Object.assign(gameState, JSON.parse(saved));
+                } catch(e) {
+                    console.error("Error carregant partida", e);
+                }
+            }
         }
-      };
 
-      const handler = (e) => {
-        const rect = c.getBoundingClientRect();
-        const touch = e.touches ? e.touches[0] : e;
-        const x = (touch.clientX - rect.left) * (320 / rect.width);
-        const y = (touch.clientY - rect.top) * (220 / rect.height);
-        scratch(x, y);
-      };
-
-      c.addEventListener("touchmove", (e) => { e.preventDefault(); handler(e); }, { passive: false });
-      c.addEventListener("mousemove", (e) => { if(e.buttons === 1) handler(e); });
-    }, 100);
-  },
-
-  // ZONA 3: POLP TÀCTIL (RASCA LA ROCA)
-  playZone3_PolpTactil() {
-    document.getElementById("mission-npc-name").innerText = "Polp, el contrabandista";
-    document.getElementById("mission-npc-dialogue").innerText = "«M'he camuflat amb textura de granit! Rasca la roca amb el dit per fer reaccionar els meus cromatòfors!»";
-    const arena = document.getElementById("mission-game-arena");
-
-    arena.innerHTML = `
-      <div style="font-size:13px; font-weight:800; color:var(--gold); margin-bottom:4px;">Repte Tàctil: Rasca el Camuflatge</div>
-      <p style="font-size:11.5px; color:#c7e6f8; margin-bottom:6px;">Frega la roca per revelar la pell d'Octopus vulgaris:</p>
-      
-      <div class="touch-canvas-wrapper">
-        <canvas id="octopus-canvas" width="320" height="220"></canvas>
-      </div>
-
-      <div id="octopus-feedback" style="font-size:12px; color:var(--coral); font-weight:bold; text-align:center;">
-        Rasca per activar els cromatòfors...
-      </div>
-    `;
-
-    setTimeout(() => {
-      const c = document.getElementById("octopus-canvas");
-      const ctx = c.getContext("2d");
-      
-      // Imatge oculta del polp
-      ctx.fillStyle = "#ff2a75";
-      ctx.fillRect(0,0,320,220);
-      ctx.font = "60px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("🐙", 160, 130);
-
-      // Capa de granit
-      const maskCanvas = document.createElement("canvas");
-      maskCanvas.width = 320;
-      maskCanvas.height = 220;
-      const mCtx = maskCanvas.getContext("2d");
-      mCtx.fillStyle = "#4a5568";
-      mCtx.fillRect(0, 0, 320, 220);
-      // Punts de granit
-      for(let i=0; i<200; i++) {
-        mCtx.fillStyle = i%2===0 ? "#2d3748" : "#718096";
-        mCtx.fillRect(Math.random()*320, Math.random()*220, 4, 4);
-      }
-
-      let rubbed = 0;
-      const draw = () => ctx.drawImage(maskCanvas, 0, 0);
-      draw();
-
-      const rub = (x, y) => {
-        mCtx.globalCompositeOperation = "destination-out";
-        mCtx.beginPath();
-        mCtx.arc(x, y, 28, 0, Math.PI*2);
-        mCtx.fill();
-        draw();
-        rubbed++;
-        AudioEngine.play(180, "sawtooth", 0.05);
-
-        if (rubbed >= 30) {
-          Game.completeCurrentZone(
-            "Has obligat el polp roquer a canviar de textura! T'ha entregat la Perla de l'Enginy.",
-            { name: "Octopus vulgaris", text: "Mestre del camuflatge als esculls rocosos de Tavernes capaç d'imitar la textura del granit." }
-          );
+        function saveGame() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+            updateUI();
         }
-      };
 
-      const handler = (e) => {
-        const rect = c.getBoundingClientRect();
-        const touch = e.touches ? e.touches[0] : e;
-        const x = (touch.clientX - rect.left) * (320 / rect.width);
-        const y = (touch.clientY - rect.top) * (220 / rect.height);
-        rub(x, y);
-      };
+        /* =========================================================================
+           4. SINTETITZADOR D'ÀUDIO (Web Audio API)
+           ========================================================================= */
+        let audioCtx = null;
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
 
-      c.addEventListener("touchmove", (e) => { e.preventDefault(); handler(e); }, { passive: false });
-      c.addEventListener("mousemove", (e) => { if(e.buttons === 1) handler(e); });
-    }, 100);
-  },
-
-  // ZONA 4: RASTRES DE LA GOLETA
-  playZone4() {
-    document.getElementById("mission-npc-name").innerText = "Naia, la sirena";
-    document.getElementById("mission-npc-dialogue").innerText = "«Les dunes submergides de La Goleta guarden marques a l'arena fina. Reconeixes quin animal mediterrani ha deixat aquest solc simètric?»";
-    const arena = document.getElementById("mission-game-arena");
-
-    arena.innerHTML = `
-      <div style="font-size:13px; font-weight:800; color:var(--gold); margin-bottom:6px;">Cas Forense Submarí:</div>
-      <p style="font-size:12.5px; margin-bottom:12px;">«Aquest animal neda tocant el fons, té forma aplanada amb aletes pectorals en forma d'ales i ha deixat una depressió suau a l'arena abans d'enterrar-se.»</p>
-      
-      <button class="btn-choice" onclick="Game.completeCurrentZone('Has desxifrat el mapa de les dunes de La Goleta. La Perla de l Arena torna al seu lloc!', { name: 'Raja radula', text: 'La rajada de claus mediterrània és un peix cartilaginós que s amaga sota l arena de Tavernes per caçar.' })">A) Rajada de claus (Raja radula)</button>
-      <button class="btn-choice" onclick="Game.loseLife('El cranc deixa xicotets punts de potes, no una depressió alada!')">B) Cranc d'arena</button>
-      <button class="btn-choice" onclick="Game.loseLife('La sípia sol deixar un solc de sifó o núvol de tinta!')">C) Sípia comuna</button>
-    `;
-  },
-
-  // ZONA 5: TALLER FALLER ABISSAL
-  playZone5() {
-    document.getElementById("mission-npc-name").innerText = "Mestre Faller Submergit";
-    document.getElementById("mission-npc-dialogue").innerText = "«Sóc el ninot que va caure a l'aigua i no volia cremar-se! Si em reconstruïu amb elements del mar i de la Falla Prado, us donaré la cinquena perla.»";
-    const arena = document.getElementById("mission-game-arena");
-
-    arena.innerHTML = `
-      <div style="font-size:13px; font-weight:800; color:var(--gold); margin-bottom:8px;">Construcció del Ninot Submarí:</div>
-      
-      <div style="margin-bottom:8px;">
-        <label style="font-size:11px; color:var(--teal); font-weight:bold;">1. BASE DEL MONUMENT:</label>
-        <select id="ninot-base" style="width:100%; padding:8px; border-radius:10px; background:#021523; color:#fff; border:1px solid var(--teal); margin-top:4px;">
-          <option value="Roca de Posidònia">🌿 Roca de Posidònia</option>
-          <option value="Conquilla de Nacre">🐚 Conquilla de Nacre</option>
-          <option value="Barca de la Platja">🛶 Barca de la Platja</option>
-        </select>
-      </div>
-
-      <div style="margin-bottom:8px;">
-        <label style="font-size:11px; color:var(--teal); font-weight:bold;">2. COS I VESTIMENTA:</label>
-        <select id="ninot-body" style="width:100%; padding:8px; border-radius:10px; background:#021523; color:#fff; border:1px solid var(--teal); margin-top:4px;">
-          <option value="Neptú amb brusa negra">🧜‍♂️ Neptú amb brusa negra de faller</option>
-          <option value="Polp amb faixa de Prado">🐙 Polp amb faixa de Prado</option>
-          <option value="Sirena de la Valldigna">🧜‍♀️ Sirena de la Valldigna</option>
-        </select>
-      </div>
-
-      <div style="margin-bottom:12px;">
-        <label style="font-size:11px; color:var(--teal); font-weight:bold;">3. NOM DEL NINOT:</label>
-        <input type="text" id="ninot-name" placeholder="Ex: El Rei del Clot" style="width:100%; padding:8px; border-radius:10px; background:#021523; color:#fff; border:1px solid var(--teal); margin-top:4px;" />
-      </div>
-
-      <button class="btn-action" style="width:100%; justify-content:center;" onclick="Game.saveNinot()">
-        PLANTAR NINOT SUBMARÍ 🎨
-      </button>
-    `;
-  },
-
-  saveNinot() {
-    const base = document.getElementById("ninot-base").value;
-    const body = document.getElementById("ninot-body").value;
-    const name = document.getElementById("ninot-name").value.trim() || "El Ninot de Prado";
-
-    this.state.customNinot = { base, body, name };
-    AudioEngine.traca();
-    this.completeCurrentZone(
-      `Has creat '${name}'! El ninot lluirà al teu refugi submarí i al llibret de la Falla Prado 2027. Perla del Foc Marí recuperada!`,
-      { name: `Ninot Prado: ${name}`, text: `Creat amb base de ${base} i cos de ${body}. Patrimoni de la festa!` }
-    );
-  },
-
-  // ZONA 6: LA MASCLETÀ DE LES BOMBOLLES
-  playZone6() {
-    document.getElementById("mission-npc-name").innerText = "Pirotècnic de les Profunditats";
-    document.getElementById("mission-npc-dialogue").innerText = "«La mascletà sota l'aigua no fa trons eixordadors: es comunica amb polsos de llum! Repeteix la seqüència exacta de bombolles.»";
-    const arena = document.getElementById("mission-game-arena");
-
-    arena.innerHTML = `
-      <div style="font-size:13px; font-weight:800; color:var(--gold); margin-bottom:4px;">Seqüència de Pòlvora Lluminosa:</div>
-      <div id="simon-status" style="font-size:12px; color:#fff; margin-bottom:10px;">Prem el botó per reproduir la traca visual!</div>
-      
-      <div class="bubble-pad-grid">
-        <button class="bubble-btn" id="bubble-0" style="background:#ff2a75; color:#fff;" onclick="Game.tapSimon(0)">🔴 Roig Traca</button>
-        <button class="bubble-btn" id="bubble-1" style="background:#00f2fe; color:#01121d;" onclick="Game.tapSimon(1)">🔵 Blau Mar</button>
-        <button class="bubble-btn" id="bubble-2" style="background:#ffbe0b; color:#01121d;" onclick="Game.tapSimon(2)">🟡 Groc Foc</button>
-        <button class="bubble-btn" id="bubble-3" style="background:#10b981; color:#fff;" onclick="Game.tapSimon(3)">🟢 Posidònia</button>
-      </div>
-
-      <button class="btn-action" style="margin-top:14px; width:100%; justify-content:center;" onclick="Game.startSimon()">
-        ▶️ REPRODUIR SEQÜÈNCIA
-      </button>
-    `;
-
-    this.simonSeq = [0, 2, 1];
-    this.playerSeq = [];
-  },
-
-  startSimon() {
-    this.playerSeq = [];
-    document.getElementById("simon-status").innerText = "Observa les pampallugues...";
-
-    this.simonSeq.forEach((val, i) => {
-      setTimeout(() => {
-        const btn = document.getElementById(`bubble-${val}`);
-        if (btn) {
-          btn.classList.add("lit");
-          AudioEngine.play(260 + (val * 90), "sine", 0.2);
-          if (navigator.vibrate) navigator.vibrate(40);
-          setTimeout(() => btn.classList.remove("lit"), 300);
+                if (type === 'click') {
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'item') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(350, now);
+                    osc.frequency.setValueAtTime(520, now + 0.1);
+                    osc.frequency.setValueAtTime(700, now + 0.2);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'sale') {
+                    // So estrident d'alarma per al personatge del SALE SALE!
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(900, now + 0.15);
+                    osc.frequency.linearRampToValueAtTime(300, now + 0.3);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now);
+                    osc.stop(now + 0.5);
+                }
+            } catch(e) {}
         }
-        if (i === this.simonSeq.length - 1) {
-          document.getElementById("simon-status").innerText = "El teu torn! Toca les 3 bombolles en ordre:";
+
+        /* =========================================================================
+           5. MECÀNICA D'EXPLORACIÓ I EVENT "SALE! SALE!"
+           ========================================================================= */
+        function exploreStreet() {
+            if (gameState.sobriety < 15) {
+                alert("🥴 No pots més... El cap et dona voltes! Beu una mica d'aigua de l'aixeta a l'apartat 'Estat' per recuperar sobrietat.");
+                return;
+            }
+
+            gameState.sobriety -= 15;
+            playSound('click');
+
+            const btn = document.getElementById('btn-search');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-spin text-lg">🌀</span> <span>Mirant entre les papereres i els portals...</span>`;
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = `<span>🔦</span> <span>Furgar pel carrer / Entrar a la Fonda (-15% Sobrietat)</span>`;
+
+                // 25% de probabilitats que aparegui l'individu del "SALE! SALE!"
+                const isSaleEvent = Math.random() < 0.28;
+
+                if (isSaleEvent) {
+                    triggerSaleEvent();
+                } else {
+                    // Robatori o troballa d'objecte curiós
+                    const randomItem = OBJECTES_CURIOSOS[Math.floor(Math.random() * OBJECTES_CURIOSOS.length)];
+                    
+                    if (!gameState.inventory[randomItem.code]) {
+                        gameState.inventory[randomItem.code] = 0;
+                    }
+                    gameState.inventory[randomItem.code]++;
+                    
+                    addRep(randomItem.rep);
+                    gameState.coins += randomItem.coins;
+                    saveGame();
+                    
+                    playSound('item');
+                    showRevealModal(randomItem);
+                }
+            }, 1000);
         }
-      }, (i + 1) * 600);
-    });
-  },
 
-  tapSimon(id) {
-    AudioEngine.play(260 + (id * 90), "sine", 0.15);
-    this.playerSeq.push(id);
+        // Activació del temut personatge "SALE! SALE!"
+        function triggerSaleEvent() {
+            playSound('sale');
+            
+            // Efecte de tremolor a la pantalla
+            const app = document.getElementById('app-container');
+            app.classList.add('shake-screen');
 
-    if (this.playerSeq[this.playerSeq.length - 1] !== this.simonSeq[this.playerSeq.length - 1]) {
-      this.loseLife("Metxa apagada en fallar el ritme!");
-      this.playerSeq = [];
-      return;
-    }
+            setTimeout(() => {
+                app.classList.remove('shake-screen');
+            }, 600);
 
-    if (this.playerSeq.length === this.simonSeq.length) {
-      AudioEngine.traca();
-      this.completeCurrentZone(
-        "¡MASCLETÀ SUBMARINA DISPARADA! El ritme del foc en silenci allibera la Perla de la Pòlvora.",
-        { name: "La Mascletà Submarina", text: "Tradició fallera adaptada al món aquàtic per a respectar els cetacis i evitar el soroll danyós." }
-      );
-    }
-  },
+            document.getElementById('modal-sale').classList.remove('hidden');
+        }
 
-  // ZONA 7: LA PLANTÀ DE NACRE
-  playZone7() {
-    document.getElementById("mission-npc-name").innerText = "Naia i la Tortuga Oràcula";
-    document.getElementById("mission-npc-dialogue").innerText = "«Has reunit les perles de la Llàgrima de la Mediterrània. La gran veritat es revela: no va ser cap monstre qui la va trencar, sinó l'oblit humà del nostre litoral.»";
-    const arena = document.getElementById("mission-game-arena");
+        // Resolucions de l'encontre amb el paio del SALE SALE
+        function handleSaleReaction(action) {
+            document.getElementById('modal-sale').classList.add('hidden');
+            
+            if (action === 'shout') {
+                playSound('item');
+                alert("🗣️ Has cridat 'SALE! SALE!' més fort que ell!\nEl paio s'ha quedat confús, t'ha xocat la mà i t'ha regalat 25 Monedes per respecte!");
+                gameState.coins += 25;
+                addRep(30);
+            } else if (action === 'bribe') {
+                if (gameState.coins >= 10) {
+                    gameState.coins -= 10;
+                    alert("🪙 Li has encastat 10 monedes a la mà. Se n'ha anat corrent cap a la Plaça de la Llibertat feliç!");
+                } else {
+                    alert("No tenies prou monedes! T'ha fotut una empenta i has perdut una mica més de sobrietat.");
+                    gameState.sobriety = Math.max(0, gameState.sobriety - 10);
+                }
+            } else if (action === 'run') {
+                alert("🏃 Has fugit a temps fins a la font de la Plaça de la Llibertat! T'has cansat però has salvat la nit.");
+                gameState.locationIdx = 1; // Canvia a Llibertat
+            }
+            saveGame();
+        }
 
-    arena.innerHTML = `
-      <div style="font-size:14px; font-weight:800; color:var(--gold); margin-bottom:8px;">La Decisió del Futur de Tavernes:</div>
-      <p style="font-size:13px; line-height:1.45; margin-bottom:14px;">Com vols restaurar la Llàgrima per al Llibret de la Falla Prado 2027?</p>
+        /* =========================================================================
+           6. CANVI D'UBICACIÓ (SIMULADOR DE MOVIMENT PER REUS)
+           ========================================================================= */
+        function patrolReus() {
+            gameState.locationIdx = (gameState.locationIdx + 1) % ZONES_REUS.length;
+            const loc = ZONES_REUS[gameState.locationIdx];
+            
+            gameState.sobriety = Math.min(100, gameState.sobriety + 10); // caminar aclareix les idees
+            saveGame();
+            playSound('click');
 
-      <button class="btn-choice" onclick="Game.endAdventure('Guardià de la Mar')">
-        🌊 <strong>Pacte de Custòdia Marina:</strong><br>
-        <span style="font-size:11px; color:#8fd3b6;">Consagrar el monument a la protecció de la Posidònia de La Goleta.</span>
-      </button>
+            document.getElementById('current-location-name').innerText = loc.name;
+            document.getElementById('street-vibe').innerText = loc.vibe;
+        }
 
-      <button class="btn-choice" onclick="Game.endAdventure('Mestre del Ninot')">
-        🔥 <strong>Flama Eterna del Prado:</strong><br>
-        <span style="font-size:11px; color:#fca5a5;">Portar el secret submarí a la cremà del poble per despertar la consciència col·lectiva.</span>
-      </button>
+        /* =========================================================================
+           7. SISTEMA DE REPUTACIÓ I BESCANVI A LA FONDA
+           ========================================================================= */
+        function addRep(amount) {
+            gameState.rep += amount;
+            const nextLevel = gameState.level * 100;
+            if (gameState.rep >= nextLevel) {
+                gameState.level++;
+                gameState.rep -= nextLevel;
+                alert(`🔝 PUJADA DE NIVELL! Ara ets Respecte Ganxet Nivell ${gameState.level}! Ja et coneixen al Carrer Ample.`);
+            }
+        }
 
-      <button class="btn-choice" onclick="Game.endAdventure('Cronista de Tavernes')">
-        📜 <strong>Lletra i Memòria del Llibret:</strong><br>
-        <span style="font-size:11px; color:#93c5fd;">Escriure cada dita i història als arxius per a que cap generació torne a oblidar el mar.</span>
-      </button>
-    `;
-  },
+        function tradeItemWithNPC(itemCode) {
+            const count = gameState.inventory[itemCode] || 0;
+            if (count <= 0) {
+                alert("❌ No portes aquest objecte a la butxaca! Fes una ronda pel carrer Ample per trobar-lo.");
+                return;
+            }
 
-  endAdventure(title) {
-    this.state.playerTitle = title;
-    if (!this.state.completedZones.includes(7)) this.state.completedZones.push(7);
-    this.state.points += 200;
-    this.save();
-    AudioEngine.chime();
-    AudioEngine.traca();
+            gameState.inventory[itemCode]--;
+            playSound('item');
 
-    this.showModal(`
-      <div style="text-align:center;">
-        <div style="font-size:50px; margin-bottom:6px;">👑🪸✨</div>
-        <h2 style="color:var(--gold); font-size:20px; margin-bottom:6px;">AVENTURA COMPLETADA!</h2>
-        <p style="font-size:13px; color:#cbe7f8; margin-bottom:12px;">Has obtingut el títol honorífic de:</p>
-        <div style="background:rgba(255,190,11,0.2); border:1px solid var(--gold); border-radius:14px; padding:10px; font-size:16px; font-weight:900; color:#fff; margin-bottom:14px;">
-          ${title}
-        </div>
-        <p style="font-size:12px; line-height:1.4; color:#a2cbde; margin-bottom:16px;">
-          Puntuació final: <strong>${this.state.points} punts</strong>.<br>
-          El teu nom i el ninot <strong>${this.state.customNinot ? this.state.customNinot.name : 'Submarí'}</strong> formaran part del llibret guanyador de la Falla Prado 2027!
-        </p>
-        <button class="btn-action" style="width:100%; justify-content:center; margin-bottom:8px;" onclick="Game.openCromoGenerator()">
-          <span>📸</span> DESCARREGAR CROMO FINAL
-        </button>
-        <button class="btn-action" style="width:100%; justify-content:center; background:rgba(255,255,255,0.1); color:#fff;" onclick="Game.closeModal(); Game.showScreen('screen-map');">
-          TORNAR AL REGNE DE NACRE
-        </button>
-      </div>
-    `);
-  }
-};
+            if (itemCode === 'xapa') {
+                gameState.coins += 50;
+                addRep(40);
+                alert("👴🏼 L'home de la boina ha calçat la taula amb la xapa esclafada:\n'Gràcies xaval! Ara ja no em vessa el cigaló!' (+50 Monedes)");
+            } else if (itemCode === 'clau') {
+                gameState.sobriety = Math.min(100, gameState.sobriety + 40);
+                addRep(50);
+                alert("🍷 Has obert el rebost amb la clau rovellada i has trobat un porró de Vermut de Reus màgic! (+40% Sobrietat)");
+            } else if (itemCode === 'dau') {
+                addRep(120);
+                gameState.coins += 30;
+                alert("🎲 La partida de parxís s'ha reprès amb crits d'alegria!\nT'has guanyat el respecte absolut de la Fonda Suïssa! (+120 Reputació)");
+            }
 
-/**
- * 8. ANIMACIÓ DE FONS: NEU MARINA I BOMBOLLES
- */
-const canvas = document.getElementById("fx-canvas");
-const ctx = canvas.getContext("2d");
-let particles = [];
+            saveGame();
+            renderPocket();
+        }
 
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.onresize = resize;
-resize();
+        function drinkWater() {
+            if (gameState.sobriety >= 100) {
+                alert("Ja estàs totalment sobri! Ara cal fer una volta pel carrer Ample.");
+                return;
+            }
+            gameState.sobriety = Math.min(100, gameState.sobriety + 25);
+            playSound('item');
+            saveGame();
+            alert("🚰 Glop d'aigua freda de l'aixeta. El cap et torna al seu lloc! (+25% Sobrietat)");
+        }
 
-for (let i = 0; i < 35; i++) {
-  particles.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    r: Math.random() * 2.5 + 1,
-    v: Math.random() * 0.4 + 0.1,
-    color: Math.random() > 0.4 ? "0, 242, 254" : "255, 190, 11"
-  });
-}
+        /* =========================================================================
+           8. RENDERITZAT DE LA INTERFÍCIE (UI)
+           ========================================================================= */
+        function updateUI() {
+            document.getElementById('header-sobriety').innerText = `${gameState.sobriety}%`;
+            document.getElementById('header-coins').innerText = gameState.coins;
+            document.getElementById('profile-sobriety-val').innerText = `${gameState.sobriety}%`;
 
-function render() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    p.y -= p.v;
-    if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
-    ctx.fillStyle = `rgba(${p.color}, 0.35)`;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  requestAnimationFrame(render);
-}
-render();
-</script>
+            if (gameState.user) {
+                document.getElementById('user-display-name').innerText = gameState.user;
+                document.getElementById('profile-name').innerText = gameState.user;
+            }
+
+            // Barra de reputació
+            document.getElementById('profile-level').innerText = `Nivell ${gameState.level}`;
+            const targetRep = gameState.level * 100;
+            document.getElementById('profile-rep-text').innerText = `${gameState.rep} / ${targetRep} Rep`;
+            const pct = Math.min(100, Math.round((gameState.rep / targetRep) * 100));
+            document.getElementById('profile-rep-bar').style.width = `${pct}%`;
+
+            // Badge de colla
+            const badge = document.getElementById('profile-faction-badge');
+            const avatar = document.getElementById('profile-avatar');
+            if (gameState.faction === 'Vermut') {
+                badge.className = "inline-block mt-1 text-[11px] px-2.5 py-0.5 rounded-full font-mono font-bold bg-red-950 text-red-400 border border-vermutRed";
+                badge.innerText = "🍷 Colla: Els Ganxets del Vermut";
+                avatar.innerText = "🍷";
+            } else if (gameState.faction === 'Veïns') {
+                badge.className = "inline-block mt-1 text-[11px] px-2.5 py-0.5 rounded-full font-mono font-bold bg-emerald-950 text-neonGreen border border-emerald-600";
+                badge.innerText = "👀 Colla: La Resistència del Carrer Ample";
+                avatar.innerText = "👀";
+            } else if (gameState.faction === 'Noctàmbuls') {
+                badge.className = "inline-block mt-1 text-[11px] px-2.5 py-0.5 rounded-full font-mono font-bold bg-amber-950 text-amber-400 border border-amber-600";
+                badge.innerText = "🦉 Colla: Els Perduts del Plim";
+                avatar.innerText = "🦉";
+            }
+        }
+
+        function renderPocket() {
+            const grid = document.getElementById('items-grid');
+            grid.innerHTML = '';
+            let total = 0;
+
+            OBJECTES_CURIOSOS.forEach(item => {
+                const count = gameState.inventory[item.code] || 0;
+                total += count;
+
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-xl border ${count > 0 ? 'bg-asphalt border-amber-600/60' : 'bg-asphalt/40 border-slate-800 opacity-40'} flex flex-col items-center text-center relative`;
+
+                card.innerHTML = `
+                    <div class="absolute top-2 right-2 text-[10px] font-mono px-1.5 rounded bg-barDark text-amber-400 font-bold border border-slate-700">
+                        x${count}
+                    </div>
+                    <div class="text-3xl my-1.5">${item.emoji}</div>
+                    <div class="font-bold text-xs text-white truncate w-full">${item.name}</div>
+                    <div class="text-[9px] uppercase font-mono mt-0.5 text-amber-400">${item.rarity}</div>
+                    <div class="text-[9px] text-slate-400 mt-1 italic">${count > 0 ? item.usefulInfo : 'Encara no trobat'}</div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('pocket-count').innerText = `${total} Objectes`;
+        }
+
+        function showRevealModal(item) {
+            document.getElementById('reveal-name').innerText = item.name;
+            document.getElementById('reveal-icon').innerText = item.emoji;
+            document.getElementById('reveal-location').innerText = `Trobat a: ${ZONES_REUS[gameState.locationIdx].name}`;
+            document.getElementById('reveal-desc').innerText = `"${item.desc}"`;
+            document.getElementById('reveal-rep').innerText = `+${item.rep} Rep`;
+            document.getElementById('reveal-coins').innerText = `+${item.coins} 🪙`;
+
+            document.getElementById('modal-reveal').classList.remove('hidden');
+        }
+
+        function closeRevealModal() {
+            document.getElementById('modal-reveal').classList.add('hidden');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.screen-view').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-amber-400');
+                btn.classList.add('text-slate-500');
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const active = document.getElementById(`nav-${tabId}`);
+            active.classList.remove('text-slate-500');
+            active.classList.add('text-amber-400');
+
+            if (tabId === 'inventory') renderPocket();
+            if (tabId === 'profile') updateUI();
+        }
+
+        /* =========================================================================
+           9. ONBOARDING I REINICI
+           ========================================================================= */
+        let tempFaction = null;
+        function chooseFaction(f) {
+            tempFaction = f;
+            alert(`Has triat: ${f}! Ara escriu el teu malnom i confirma.`);
+        }
+
+        function confirmOnboarding() {
+            const name = document.getElementById('input-username').value.trim();
+            if (!name) {
+                alert("Posa't un malnom ganxet per la nit de Reus!");
+                return;
+            }
+            if (!tempFaction) {
+                alert("Has de triar una colla!");
+                return;
+            }
+
+            gameState.user = name;
+            gameState.faction = tempFaction;
+            saveGame();
+
+            document.getElementById('modal-faction').classList.add('hidden');
+            playSound('item');
+        }
+
+        function resetData() {
+            if (confirm("Vols oblidar tot el que ha passat aquesta nit al carrer Ample?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
+        // Regeneració passiva de sobrietat
+        setInterval(() => {
+            if (gameState.sobriety < 100) {
+                gameState.sobriety = Math.min(100, gameState.sobriety + 5);
+                saveGame();
+            }
+        }, 12000);
+
+        /* INICIALITZACIÓ */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadGame();
+
+            if (!gameState.user || !gameState.faction) {
+                document.getElementById('modal-faction').classList.remove('hidden');
+            }
+
+            const loc = ZONES_REUS[gameState.locationIdx];
+            document.getElementById('current-location-name').innerText = loc.name;
+            document.getElementById('street-vibe').innerText = loc.vibe;
+
+            updateUI();
+            renderPocket();
+        });
+    </script>
 </body>
 </html>
